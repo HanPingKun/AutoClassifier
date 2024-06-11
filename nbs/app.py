@@ -37,22 +37,22 @@ def predict():
         logger.info("Loading environment variables")
         load_dotenv(find_dotenv())
 
-        with open('AutoClassifier/data/rxnclass2id.json', 'r') as f:
+        with open('../data/rxnclass2id.json', 'r') as f:
             rxnclass2id = json.load(f)
-        with open('AutoClassifier/data/rxnclass2name.json', 'r') as f:
+        with open('../data/rxnclass2name.json', 'r') as f:
             rxnclass2name = json.load(f)
 
         rxnclass2id[rxn_class] = class_id
         rxnclass2name[rxn_class] = class_name
 
-        with open('AutoClassifier/data/rxnclass2id.json', 'w') as file:
+        with open('../data/rxnclass2id.json', 'w') as file:
             json.dump(rxnclass2id, file, indent=4)
-        with open('AutoClassifier/data/rxnclass2name.json', 'w') as file:
+        with open('../data/rxnclass2name.json', 'w') as file:
             json.dump(rxnclass2name, file, indent=4)
 
         all_classes = sorted(rxnclass2id.keys())
 
-        schneider_df = pd.read_excel('AutoClassifier/data/schneider50k.xlsx', index_col=0)
+        schneider_df = pd.read_excel('../data/schneider50k.xlsx', index_col=0)
         schneider_df['class_id'] = [rxnclass2id[c] for c in schneider_df.rxn_class]
 
         train_df_initial = schneider_df[schneider_df.split == 'train']
@@ -85,17 +85,17 @@ def predict():
             'regression': False, "num_labels": len(final_train_df.class_id.unique()), "fp16": False,
             "evaluate_during_training": True, 'manual_seed': 42,
             "max_seq_length": 512, "train_batch_size": 1, "warmup_ratio": 0.00,
-            'output_dir': 'AutoClassifier/out/bert_class_1k_tpl+(50+1)k', 
+            'output_dir': '../out/bert_class_1k_tpl+(50+1)k', 
             'thread_count': 8,
         }
 
-        model_path = 'AutoClassifier/out/bert_mlm_1k_tpl'
+        model_path = '../out/bert_mlm_1k_tpl'
         model = SmilesClassificationModel("bert", model_path, num_labels=len(final_train_df.class_id.unique()), args=model_args, use_cuda=torch.cuda.is_available())
 
         logger.info("Starting model training")
         model.train_model(final_train_df, eval_df=eval_df, acc=metrics.accuracy_score, mcc=metrics.matthews_corrcoef)
 
-        train_model_path = 'AutoClassifier/out/bert_class_1k_tpl+(50+1)k'
+        train_model_path = '../out/bert_class_1k_tpl+(50+1)k'
         model = SmilesClassificationModel("bert", train_model_path, use_cuda=torch.cuda.is_available())
 
         eval_df_f = test_df[['rxn']]
@@ -117,24 +117,24 @@ def predict():
         result = df_preds.iloc[[0]]
         result_transposed = result.transpose()
         result_transposed.reset_index(inplace=True)
-        result_transposed.to_csv('AutoClassifier/out/data/test50k.csv', index=False)
+        result_transposed.to_csv('../out/data/test50k.csv', index=False)
 
         result2 = df_preds2.iloc[[0]]
         result_transposed2 = result2.transpose()
         result_transposed2.reset_index(inplace=True)
-        result_transposed2.to_csv('AutoClassifier/out/data/newtest50k.csv', index=False)
+        result_transposed2.to_csv('../out/data/newtest50k.csv', index=False)
 
-        class_id.to_csv('AutoClassifier/out/data/true50k.csv', index=False)
-        class_id2.to_csv('AutoClassifier/out/data/newtrue50k.csv', index=False)
+        class_id.to_csv('../out/data/true50k.csv', index=False)
+        class_id2.to_csv('../out/data/newtrue50k.csv', index=False)
 
-        true_values = pd.read_csv('AutoClassifier/out/data/true50k.csv')
-        predicted_values = pd.read_csv('AutoClassifier/out/data/test50k.csv')
+        true_values = pd.read_csv('../out/data/true50k.csv')
+        predicted_values = pd.read_csv('../out/data/test50k.csv')
         predicted_values = predicted_values.iloc[:, 1]
         true_values = true_values.iloc[0:, 0]
         accuracy = (predicted_values == true_values).mean()
 
-        true_values2 = pd.read_csv('AutoClassifier/out/data/newtrue50k.csv')
-        predicted_values2 = pd.read_csv('AutoClassifier/out/data/newtest50k.csv')
+        true_values2 = pd.read_csv('../out/data/newtrue50k.csv')
+        predicted_values2 = pd.read_csv('../out/data/newtest50k.csv')
         predicted_values2 = predicted_values2.iloc[:, 1]
         true_values2 = true_values2.iloc[0:, 0]
         accuracy2 = (predicted_values2 == true_values2).mean()

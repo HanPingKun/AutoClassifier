@@ -15,4 +15,5 @@ dependencies:
       - python-dotenv==0.21.1
       - rxnfp
       - flask
+      - openpyxl
 prefix: /workspace/miniconda3/envs/AutoClassifier_cpu_env

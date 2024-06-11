@@ -7,11 +7,11 @@ dependencies:
   - python=3.7
   - rdkit=2020.03.3
   - pip:
-  - pandas
-    - numpy
-    - torch==1.12.1
-    - simpletransformers==0.61.13
-    - scikit-learn==0.23.1
-    - python-dotenv==0.21.1
-    - flask
+      - pandas
+      - torch==1.12.1
+      - simpletransformers==0.61.13
+      - scikit-learn==0.23.1
+      - numpy
+      - python-dotenv==0.21.1
+      - flask
 prefix: /workspace/miniconda3/envs/AutoClassifier_cpu_env

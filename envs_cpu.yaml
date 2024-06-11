@@ -1,4 +1,4 @@
-name: classifier_cpu_env
+name: AutoClassifier_cpu_env
 channels:
   - rdkit
   - pytorch
@@ -14,4 +14,4 @@ dependencies:
     - scikit-learn==0.23.1
     - python-dotenv==0.21.1
     - flask
-prefix: /workspace/miniconda3/envs/classifier_cpu_env
+prefix: /workspace/miniconda3/envs/AutoClassifier_cpu_env

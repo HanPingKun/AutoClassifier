@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预测反应类别</title>
+</head>
+<body>
+    <h1>预测反应类别</h1>
+    <form action="/predict" method="post" enctype="multipart/form-data">
+        <label for="rxn_class">反应类别:</label>
+        <input type="text" id="rxn_class" name="rxn_class"><br><br>
+        <label for="class_id">类别ID:</label>
+        <input type="text" id="class_id" name="class_id"><br><br>
+        <label for="class_name">类别名称:</label>
+        <input type="text" id="class_name" name="class_name"><br><br>
+        <label for="file">上传新数据文件:</label>
+        <input type="file" id="file" name="file"><br><br>
+        <input type="submit" value="预测">
+    </form>
+</body>
+</html>

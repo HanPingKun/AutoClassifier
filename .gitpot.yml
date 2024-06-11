@@ -7,7 +7,7 @@ tasks:
       conda env create -n AutoClassifier_env -f envs_cpu.yaml
 
     command: >
-      cd /workspace/AutoClassifier &&
+      cd /workspace/AutoClassifier/nbs &&
       /workspace/miniconda3/envs/AutoClassifier_env/bin/python app.py
 
 

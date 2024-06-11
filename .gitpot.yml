@@ -4,11 +4,11 @@ tasks:
       bash /tmp/Minconda3.sh -b -p /workspace/miniconda3 &&
       echo "export PATH=/workspace/miniconda3/bin:$PATH" >> ~/.bashrc &&
       source ~/.bashrc &&
-      conda env create -n classifier_env -f envs_cpu.yaml
+      conda env create -n AutoClassifier_env -f envs_cpu.yaml
 
     command: >
-      cd /workspace/classifier &&
-      /workspace/miniconda3/envs/classifier_env/bin/python app.py
+      cd /workspace/AutoClassifier &&
+      /workspace/miniconda3/envs/AutoClassifier_env/bin/python app.py
 
 
 ports:

@@ -45,9 +45,9 @@ def predict():
         load_dotenv(find_dotenv())
 
         # 加载反应类别与其对应的 ID 和名称的映射关系，并提取所有反应类别，按字典序排序
-        with open('AutoClassifier/data/rxnclass2id.json', 'r') as f:
+        with open('../data/rxnclass2id.json', 'r') as f:
             rxnclass2id = json.load(f)
-        with open('AutoClassifier/data/rxnclass2name.json', 'r') as f:
+        with open('../data/rxnclass2name.json', 'r') as f:
             rxnclass2name = json.load(f)
 
         # 修改 JSON 对象，添加反应类型
@@ -55,15 +55,15 @@ def predict():
         rxnclass2name[rxn_class] = class_name
 
         # 将修改后的 JSON 对象保存回文件
-        with open('AutoClassifier/data/rxnclass2id.json', 'w') as file:
+        with open('../data/rxnclass2id.json', 'w') as file:
             json.dump(rxnclass2id, file, indent=4)
-        with open('AutoClassifier/data/rxnclass2name.json', 'w') as file:
+        with open('../data/rxnclass2name.json', 'w') as file:
             json.dump(rxnclass2name, file, indent=4)
         
         all_classes = sorted(rxnclass2id.keys())
 
         # 从 Excel 文件中读取反应数据，并根据之前加载的 rxnclass2id 字典，为每个反应类别添加相应的 class_id
-        schneider_df = pd.read_excel('AutoClassifier/data/schneider50k.xlsx', index_col=0)
+        schneider_df = pd.read_excel('../data/schneider50k.xlsx', index_col=0)
         schneider_df['class_id'] = [rxnclass2id[c] for c in schneider_df.rxn_class]
         train_df_initial = schneider_df[schneider_df.split == 'train']
         test_df = schneider_df[schneider_df.split == 'test']
@@ -85,7 +85,6 @@ def predict():
         new_train_df2, new_eval_df = train_test_split(new_schneider_df, test_size=1/20, random_state=42)
         train_df2 = pd.concat([train_df2, new_train_df2])
         eval_df = pd.concat([eval_df[['rxn', 'class_id']], new_eval_df[['rxn', 'class_id']]])
-        print(train_df2.shape)  # 文件上传是没问题的
 
         # 将 eval_df 数据框的列名重命名为 text 和 class_id
         eval_df.columns = ['text', 'class_id']
@@ -105,14 +104,14 @@ def predict():
             'thread_count': 8,
             'multiprocessing_chunksize':2,
         }
-        model_path = 'AutoClassifier/out/bert_mlm_1k_tpl'
+        model_path = '../out/bert_mlm_1k_tpl'
         model = SmilesClassificationModel("bert", model_path, num_labels=len(final_train_df.class_id.unique()), args=model_args, use_cuda=torch.cuda.is_available())
         # 启用缓存
         model.train_model(final_train_df, eval_df=eval_df, acc=metrics.accuracy_score, mcc=metrics.matthews_corrcoef)
         logger.info("model training over")
 
         # 调用训练好的模型
-        train_model_path = 'AutoClassifier/out/bert_class_1k_tpl+(50+1)k'
+        train_model_path = '../out/bert_class_1k_tpl+(50+1)k'
         model = SmilesClassificationModel("bert", train_model_path, use_cuda=torch.cuda.is_available())
 
        #读入test数据集(原始)
@@ -133,26 +132,26 @@ def predict():
         result = df_preds.iloc[[0]]
         result_transposed = result.transpose()
         result_transposed.reset_index(inplace=True)
-        result_transposed.to_csv('AutoClassifier/out/data/test50k.csv', index=False)
+        result_transposed.to_csv('../out/data/test50k.csv', index=False)
         #结果处理(新加)
         result2 = df_preds2.iloc[[0]]
         result_transposed2 = result2.transpose()
         result_transposed2.reset_index(inplace=True)
-        result_transposed2.to_csv('AutoClassifier/out/data/newtest50k.csv', index=False)
+        result_transposed2.to_csv('../out/data/newtest50k.csv', index=False)
         #真实值记录
-        class_id.to_csv('AutoClassifier/out/data/true50k.csv', index=False)
-        class_id2.to_csv('AutoClassifier/out/data/newtrue50k.csv', index=False)
+        class_id.to_csv('../out/data/true50k.csv', index=False)
+        class_id2.to_csv('../out/data/newtrue50k.csv', index=False)
         #准确率（原始）
-        true_values = pd.read_csv('AutoClassifier/out/data/true50k.csv')
-        predicted_values = pd.read_csv('AutoClassifier/out/data/test50k.csv')
+        true_values = pd.read_csv('../out/data/true50k.csv')
+        predicted_values = pd.read_csv('../out/data/test50k.csv')
         predicted_values = predicted_values.iloc[:, 1]
         true_values = true_values.iloc[0:, 0]
         accuracy = (predicted_values == true_values).mean()
         print("原始数据预测正确率为")
         print(accuracy)
         #准确率（新加）
-        true_values2 = pd.read_csv('AutoClassifier/out/data/newtrue50k.csv')
-        predicted_values2 = pd.read_csv('AutoClassifier/out/data/newtest50k.csv')
+        true_values2 = pd.read_csv('../out/data/newtrue50k.csv')
+        predicted_values2 = pd.read_csv('../out/data/newtest50k.csv')
         predicted_values2 = predicted_values2.iloc[:, 1]
         true_values2 = true_values2.iloc[0:, 0]
         accuracy2 = (predicted_values2 == true_values2).mean()

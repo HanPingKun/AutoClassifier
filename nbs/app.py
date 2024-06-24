@@ -102,7 +102,7 @@ def predict():
             "max_seq_length": 512, "train_batch_size": 1, "warmup_ratio": 0.00,
             'output_dir': 'out/bert_class_1k_tpl+(50+1)k',
             'thread_count': 8,
-            'multiprocessing_chunksize':16,
+            'multiprocessing_chunksize':2,
         }
         model_path = '../out/bert_mlm_1k_tpl'
         model = SmilesClassificationModel("bert", model_path, num_labels=len(final_train_df.class_id.unique()), args=model_args, use_cuda=torch.cuda.is_available())
